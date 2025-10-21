@@ -1,0 +1,12 @@
+@restwebapi_HostAddress = http://localhost:5228
+
+###
+
+POST  {{restwebapi_HostAddress}}/messages
+content-type: application/json
+
+{
+  "content": "Hello, this is a test message!",
+  "receivedAt": "2024-06-01T12:00:00Z",
+  "sender": "test user"
+}
