@@ -16,7 +16,10 @@ app.UseHttpsRedirection();
 
 app.MapPost("/messages", (Message msg) =>
 {
-    Console.WriteLine($"Received message from {msg.sender}: {msg.content}");
+    Console.WriteLine($"Received message from angular app: {msg.content}");
+
+    msg.receivers.Add(new Receiver("RestWebAPI", "AngularApp", DateTime.Now));
+
     return Results.Ok(new
     {
         Status = "Received",
@@ -26,4 +29,5 @@ app.MapPost("/messages", (Message msg) =>
 
 app.Run();
 
-record Message(string content, DateTime receivedAt, string sender);
+record Message(int id, string content, List<Receiver> receivers);
+record Receiver(string receiverName, string senderName, DateTime receivedAt);
