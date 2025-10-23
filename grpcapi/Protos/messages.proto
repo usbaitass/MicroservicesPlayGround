@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace = "grpcapi";
+
+package messages;
+
+// The gRPC service definition
+service Messenger {
+  rpc SendMessage (MessageRequest) returns (MessageReply);
+}
+
+// The message payload
+message MessageRequest {
+  string content = 1;
+}
+
+// The response payload
+message MessageReply {
+  string confirmation = 1;
+}

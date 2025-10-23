@@ -1,8 +1,35 @@
+using grpcapi;
+using Microsoft.AspNetCore.Mvc;
+using restwebapi.Services;
+
+AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+#region grpc client setup
+
+builder.Services.AddGrpcClient<Messenger.MessengerClient>(o =>
+{
+    o.Address = new Uri("https://localhost:5002");
+}).ConfigureChannel(o =>
+{
+    o.HttpHandler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
+});
+
+#endregion
+
+# region register services
+
+builder.Services.AddScoped<IMessageGrpcService, MessageGrpcService>();
+
+#endregion
 
 var app = builder.Build();
 
@@ -14,20 +41,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/messages", (Message msg) =>
+app.MapPost("/messages", async ([FromServices] IMessageGrpcService messageGrpcService, Message msg, CancellationToken cancellationToken) =>
 {
-    Console.WriteLine($"Received message from angular app: {msg.content}");
+    msg.content += $";RestWebAPI {DateTime.Now:O};";
 
-    msg.receivers.Add(new Receiver("RestWebAPI", "AngularApp", DateTime.Now));
+    var result = await messageGrpcService.SendMessageAsync(msg, cancellationToken);
 
     return Results.Ok(new
     {
         Status = "Received",
-        Echo = msg
+        Echo = result.content
     });
 }).WithName("SendMessage");
 
 app.Run();
-
-record Message(int id, string content, List<Receiver> receivers);
-record Receiver(string receiverName, string senderName, DateTime receivedAt);
