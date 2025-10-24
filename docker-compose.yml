@@ -1,0 +1,32 @@
+services:
+  restwebapi:
+    image: restwebapi:latest
+    build:
+      context: restwebapi
+      dockerfile: Dockerfile
+    ports:
+      - "5228:5228"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5228
+    depends_on:
+      - grpcapi
+    networks:
+      - microservices-network
+
+  grpcapi:
+    image: grpcapi:latest
+    build:
+      context: grpcapi
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:5002
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
