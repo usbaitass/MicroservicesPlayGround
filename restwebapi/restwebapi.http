@@ -2,6 +2,11 @@
 
 ###
 
+GET  {{restwebapi_HostAddress}}
+content-type: application/json
+
+###
+
 POST  {{restwebapi_HostAddress}}/messages
 content-type: application/json
 

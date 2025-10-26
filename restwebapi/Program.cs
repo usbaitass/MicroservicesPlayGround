@@ -41,6 +41,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapGet("/", () => "RestWebAPI is up and running");
+
 app.MapPost("/messages", async ([FromServices] IMessageGrpcService messageGrpcService, Message msg, CancellationToken cancellationToken) =>
 {
     msg.content += $";RestWebAPI {DateTime.Now:O};";
