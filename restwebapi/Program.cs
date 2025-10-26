@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc;
 using restwebapi.Services;
 using reswebapi;
@@ -14,7 +16,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddGrpcClient<Messenger.MessengerClient>(o =>
 {
-    o.Address = new Uri("https://localhost:5002");
+    o.Address = new Uri(builder.Configuration["GrpcSettings:GrpcUrl"]!);
 }).ConfigureChannel(o =>
 {
     o.HttpHandler = new HttpClientHandler
@@ -40,6 +42,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapGet("/", () => "RestWebAPI is up and running");
 
 app.MapPost("/messages", async ([FromServices] IMessageGrpcService messageGrpcService, Message msg, CancellationToken cancellationToken) =>
 {
