@@ -6,6 +6,7 @@ The project contains multiple microservice projects that interact with each othe
 ```
 docker compose up
 docker compose build --no-cache
+docker compose down
 ```
 
 ### setup certificate
