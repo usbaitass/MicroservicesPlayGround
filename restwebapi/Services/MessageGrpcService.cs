@@ -5,24 +5,40 @@ namespace restwebapi.Services;
 public class MessageGrpcService : IMessageGrpcService
 {
     private readonly Messenger.MessengerClient _grpcClient;
+    private readonly ILogger<MessageGrpcService> _logger;
 
-    public MessageGrpcService(Messenger.MessengerClient grpcClient)
+    public MessageGrpcService(Messenger.MessengerClient grpcClient,
+        ILogger<MessageGrpcService> logger)
     {
         _grpcClient = grpcClient;
+        _logger = logger;
     }
 
     public async Task<Message> SendMessageAsync(Message msg, CancellationToken cancellationToken)
     {
+        _logger.LogInformation($"[{DateTime.Now:T}] Received message: {msg.content}");
+
         var grpcRequest = new MessageRequest
         {
             Content = msg.content ?? string.Empty
         };
 
-        var grpcReply = await _grpcClient.SendMessageAsync(grpcRequest, cancellationToken: cancellationToken);
+        string grpcReplyConfirmation = string.Empty;
 
+        try
+        {
+            var grpcReply = await _grpcClient.SendMessageAsync(grpcRequest, cancellationToken: cancellationToken);
+            grpcReplyConfirmation = grpcReply.Confirmation;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while logging message content");
+            //throw;
+        }
+        
         return new Message
         {
-            content = grpcReply.Confirmation
+            content = grpcReplyConfirmation
         };
     }
 }

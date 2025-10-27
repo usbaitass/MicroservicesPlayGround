@@ -5,18 +5,36 @@ namespace grpcapi.Services;
 public class MessageService : Messenger.MessengerBase
 {
     private readonly ILogger<MessageService> _logger;
-    public MessageService(ILogger<MessageService> logger)
+    private readonly IWebSocketMessageService _webSocketMessageService;
+
+    public MessageService(ILogger<MessageService> logger,
+        IWebSocketMessageService webSocketMessageService)
     {
         _logger = logger;
+        _webSocketMessageService = webSocketMessageService;
     }
 
-    public override Task<MessageReply> SendMessage(MessageRequest request, ServerCallContext context)
+    public override async Task<MessageReply> SendMessage(MessageRequest request, ServerCallContext context)
     {
-        _logger.LogInformation("Received message from: {Content}", request.Content);
+        _logger.LogInformation($"[{DateTime.Now:T}] Received message: {request.Content}");
 
-        return Task.FromResult(new MessageReply
+        var message = $"{request.Content};GrpcAPI {DateTime.Now:O};";
+
+        var result = message;
+
+        try
         {
-            Confirmation = $"{request.Content};GrpcAPI {DateTime.Now:O};"
+            result = await _webSocketMessageService.SendWebSocketMessage(message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while sending WebSocket message");
+            //throw;
+        }        
+
+        return await Task.FromResult(new MessageReply
+        {
+            Confirmation = result
         });
     }
 }
