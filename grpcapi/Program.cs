@@ -20,10 +20,12 @@ builder.Services.AddGrpc(options =>
     options.EnableDetailedErrors = true;
 });
 
+builder.Services.AddScoped<IWebSocketMessageService, WebSocketMessageService>();
+
 var app = builder.Build();
 
 app.MapGrpcService<MessageService>();
 
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+app.MapGet("/", () => "gRPC service is up and running!");
 
 app.Run();

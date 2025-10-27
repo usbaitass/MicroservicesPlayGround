@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc;
 using restwebapi.Services;
 using reswebapi;

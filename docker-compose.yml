@@ -32,6 +32,25 @@ services:
     volumes:
       - ~/.aspnet/https:/https:ro
 
+  websocketapi:
+    image: websocketapi:latest
+    build:
+      context: websocketapi
+      dockerfile: Dockerfile
+    ports:
+      - "5128:5128"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:5128
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=123asd
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    depends_on:
+      - grpcapi
+    networks:
+      - microservices-network 
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
 networks:
   microservices-network:
     driver: bridge

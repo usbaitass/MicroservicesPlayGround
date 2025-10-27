@@ -14,3 +14,8 @@ docker compose down
 dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p 123asd
 dotnet dev-certs https --trust
 ```
+
+### add project to the solution
+```
+dotnet sln add grpcapi/grpcapi.csproj 
+```
