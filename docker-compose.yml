@@ -39,9 +39,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5128:5128"
+      - "7043:7043"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - ASPNETCORE_URLS=http://+:5128
+      - ASPNETCORE_URLS=http://+:5128;https://+:7043
       - ASPNETCORE_Kestrel__Certificates__Default__Password=123asd
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     depends_on:
