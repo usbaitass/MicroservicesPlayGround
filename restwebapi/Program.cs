@@ -43,16 +43,17 @@ app.UseHttpsRedirection();
 
 app.MapGet("/", () => "RestWebAPI is up and running");
 
-app.MapPost("/messages", async ([FromServices] IMessageGrpcService messageGrpcService, Message msg, CancellationToken cancellationToken) =>
+app.MapPost("/messages", async ([FromServices] ILogger<Program> logger, IMessageGrpcService messageGrpcService, Message msg, CancellationToken cancellationToken) =>
 {
+    logger.LogInformation($"[{DateTime.Now:T}] Received message: {msg.content}");
+
     msg.content += $";RestWebAPI {DateTime.Now:O};";
 
     var result = await messageGrpcService.SendMessageAsync(msg, cancellationToken);
 
     return Results.Ok(new
     {
-        Status = "Received",
-        Echo = result.content
+        Status = "Received"
     });
 }).WithName("SendMessage");
 
