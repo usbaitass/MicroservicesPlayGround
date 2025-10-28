@@ -10,10 +10,16 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:5228
       - GRPC_SERVICE_URL=https://grpcapi:5002
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=123asd
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP2UNENCRYPTEDSUPPORT=true
+      - DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP3SUPPORT=true
     depends_on:
       - grpcapi
     networks:
-      - microservices-network    
+      - microservices-network
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
   grpcapi:
     image: grpcapi:latest
@@ -26,7 +32,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=https://+:5002
       - ASPNETCORE_Kestrel__Certificates__Default__Password=123asd
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx   
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     networks:
       - microservices-network
     volumes:
@@ -39,11 +45,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5128:5128"
+      - "7043:7043"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - ASPNETCORE_URLS=http://+:5128
+      - ASPNETCORE_URLS=http://+:5128;https://+:7043
       - ASPNETCORE_Kestrel__Certificates__Default__Password=123asd
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP2UNENCRYPTEDSUPPORT=true
+      - DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP3SUPPORT=true
     depends_on:
       - grpcapi
     networks:
