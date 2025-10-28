@@ -27,15 +27,23 @@ public class WebSocketMessageService : IWebSocketMessageService
     // Handle incoming updates from server
     connection.On<string, string>("ReceiveUpdate", (source, data) =>
     {
-      Console.WriteLine($"Received update from {source}: {data}");
+      _logger.LogInformation($"Received update from {source}: {data}");
       replyMessage = data;
     });
 
     // Start the connection
     await connection.StartAsync();
-    Console.WriteLine("Client connected to SignalR server.");
+    _logger.LogInformation("SignalR connection started.");
 
-    await connection.InvokeAsync("BroadcastMessage", "grpcApi", message);
+    var res = await connection.InvokeAsync("BroadcastMessage", "grpcApi", message).ContinueWith(task =>
+    {
+      Task.Delay(1000).Wait(); // wait for a second to receive the message
+      return task;
+    });
+
+    // Stop the connection
+    await connection.StopAsync();
+    _logger.LogInformation("SignalR connection stopped.");
 
     return replyMessage;
   }
