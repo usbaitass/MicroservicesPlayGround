@@ -7,14 +7,18 @@ namespace rabbitmqapi.Services
     public class RabbitMqConsumer : BackgroundService, IRabbitMqConsumer
     {
         private readonly ILogger<RabbitMqConsumer> _logger;
+        private readonly IConfiguration _configuration;
         private readonly string _hostname = "localhost";
         private readonly string _queueName = "message-queue";
         private IChannel? _channel;
         private IConnection? _connection;
 
-        public RabbitMqConsumer(ILogger<RabbitMqConsumer> logger)
+        public RabbitMqConsumer(ILogger<RabbitMqConsumer> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
+            _hostname = _configuration["RabbitMqSettings:RabbitMqUrl"] ?? "localhost";
+            _logger.LogInformation($"[{DateTime.Now:T}] HOSTNAME: {_hostname}");
         }
 
         protected async override Task ExecuteAsync(CancellationToken cancellationToken)

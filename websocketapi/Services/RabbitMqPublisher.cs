@@ -6,15 +6,18 @@ namespace websocketapi.Services
     public class RabbitMqPublisher : IRabbitMqPublisher
     {
         private readonly ILogger<RabbitMqPublisher> _logger;
-
-        public RabbitMqPublisher(ILogger<RabbitMqPublisher> logger)
-        {
-            _logger = logger;
-        }
-
+        private readonly IConfiguration _configuration;
         private readonly string _hostname = "localhost";
         private readonly string _queueName = "message-queue";
 
+        public RabbitMqPublisher(ILogger<RabbitMqPublisher> logger, IConfiguration configuration)
+        {
+            _logger = logger;
+            _configuration = configuration;
+            _hostname = _configuration["RabbitMqSettings:RabbitMqUrl"] ?? "localhost";
+            _logger.LogInformation($"[{DateTime.Now:T}] HOSTNAME: {_hostname}");
+        }
+        
         public async Task Publish(string message)
         {
             var factory = new ConnectionFactory() { HostName = _hostname };
