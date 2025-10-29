@@ -20,7 +20,7 @@ public class MessageService : Messenger.MessengerBase
 
         var message = $"{request.Content};GrpcAPI {DateTime.Now:O};";
 
-        var result = message;
+        var result = string.Empty;
 
         try
         {
@@ -30,7 +30,7 @@ public class MessageService : Messenger.MessengerBase
         {
             _logger.LogError(ex, "Error while sending WebSocket message");
             //throw;
-        }        
+        }
 
         return await Task.FromResult(new MessageReply
         {

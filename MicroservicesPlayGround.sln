@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grpcapi", "grpcapi\grpcapi.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "websocketapi", "websocketapi\websocketapi.csproj", "{3F518E72-07C4-4B97-BFB5-DAA495FAD371}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rabbitmqapi", "rabbitmqapi\rabbitmqapi.csproj", "{9EB79A6D-8870-489F-90E9-0B49360D9049}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{3F518E72-07C4-4B97-BFB5-DAA495FAD371}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F518E72-07C4-4B97-BFB5-DAA495FAD371}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F518E72-07C4-4B97-BFB5-DAA495FAD371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EB79A6D-8870-489F-90E9-0B49360D9049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EB79A6D-8870-489F-90E9-0B49360D9049}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EB79A6D-8870-489F-90E9-0B49360D9049}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EB79A6D-8870-489F-90E9-0B49360D9049}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

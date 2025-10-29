@@ -16,8 +16,6 @@ public class MessageGrpcService : IMessageGrpcService
 
     public async Task<Message> SendMessageAsync(Message msg, CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"[{DateTime.Now:T}] Received message: {msg.content}");
-
         var grpcRequest = new MessageRequest
         {
             Content = msg.content ?? string.Empty
