@@ -5,15 +5,22 @@ namespace rabbitmqapi.Services
     public class KafkaProducerService : IKafkaProducerService
     {
         private readonly ILogger<KafkaProducerService> _logger;
+        private readonly IConfiguration _configuration;
         private readonly ProducerConfig _config;
         private readonly string _topic = "test-topic";
+        private readonly string _defaultHostName = "localhost:9092";
 
-        public KafkaProducerService(ILogger<KafkaProducerService> logger)
+        public KafkaProducerService(
+            ILogger<KafkaProducerService> logger,
+            IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
+            var hostName = _configuration["KafkaSettings:KafkaUrl"] ?? _defaultHostName;
+            _logger.LogInformation($"[{DateTime.Now:T}] HOSTNAME: {hostName}");
             _config = new ProducerConfig
             {
-                BootstrapServers = "localhost:9092",
+                BootstrapServers = hostName,
                 AllowAutoCreateTopics = true,
                 Acks = Acks.All
             };

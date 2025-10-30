@@ -57,20 +57,7 @@ services:
       - microservices-network 
     volumes:
       - ~/.aspnet/https:/https:ro
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"   # RabbitMQ default port
-      - "15672:15672" # RabbitMQ management UI
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - microservices-network
-
+    
   rabbitmqapi:
     image: rabbitmqapi:latest
     build:
@@ -92,10 +79,46 @@ services:
       - RABBITMQ_PASSWORD=guest
     depends_on:
       - rabbitmq
+      - kafka
     networks:
       - microservices-network
     volumes:
       - ~/.aspnet/https:/https:ro
+
+  kafkaapi:
+    image: kafkaapi:latest
+    build:
+      context: kafkaapi
+      dockerfile: Dockerfile
+    ports:
+      - "5171:5171"
+      - "7021:7021"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:5171;https://+:7021
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=123asd
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP2UNENCRYPTEDSUPPORT=true
+      - DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP3SUPPORT=true
+    depends_on:
+      - kafka
+    networks:
+      - microservices-network
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"   # RabbitMQ default port
+      - "15672:15672" # RabbitMQ management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - microservices-network  
 
   kafka:
     image: confluentinc/cp-kafka:latest

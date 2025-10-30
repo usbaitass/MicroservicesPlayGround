@@ -5,15 +5,22 @@ namespace kafkaapi.Services
     public class KafkaConsumerService : BackgroundService, IKafkaConsumerService
     {
         private readonly ILogger<KafkaConsumerService> _logger;
+        private readonly IConfiguration _configuration;
         private readonly ConsumerConfig _config;
+        private readonly string _defaultHostName = "localhost:9092";
 
-        public KafkaConsumerService(ILogger<KafkaConsumerService> logger)
+        public KafkaConsumerService(
+            ILogger<KafkaConsumerService> logger,
+            IConfiguration configuration)
         {
-
             _logger = logger;
+            _configuration = configuration;
+            var hostName = _configuration["KafkaSettings:KafkaUrl"] ?? _defaultHostName;
+            _logger.LogInformation($"[{DateTime.Now:T}] HOSTNAME: {hostName}");
+
             _config = new ConsumerConfig
             {
-                BootstrapServers = "localhost:9092",
+                BootstrapServers = hostName,
                 GroupId = "test-group",
                 AutoOffsetReset = AutoOffsetReset.Earliest
             };
