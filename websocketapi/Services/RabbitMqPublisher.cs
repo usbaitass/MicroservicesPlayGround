@@ -17,7 +17,7 @@ namespace websocketapi.Services
             _hostname = _configuration["RabbitMqSettings:RabbitMqUrl"] ?? "localhost";
             _logger.LogInformation($"[{DateTime.Now:T}] HOSTNAME: {_hostname}");
         }
-        
+
         public async Task Publish(string message)
         {
             var factory = new ConnectionFactory() { HostName = _hostname };

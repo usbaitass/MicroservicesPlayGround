@@ -57,21 +57,7 @@ services:
       - microservices-network 
     volumes:
       - ~/.aspnet/https:/https:ro
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"   # RabbitMQ default port
-      - "15672:15672" # RabbitMQ management UI
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - microservices-network
-
+    
   rabbitmqapi:
     image: rabbitmqapi:latest
     build:
@@ -93,10 +79,70 @@ services:
       - RABBITMQ_PASSWORD=guest
     depends_on:
       - rabbitmq
+      - kafka
     networks:
       - microservices-network
     volumes:
       - ~/.aspnet/https:/https:ro
+
+  kafkaapi:
+    image: kafkaapi:latest
+    build:
+      context: kafkaapi
+      dockerfile: Dockerfile
+    ports:
+      - "5171:5171"
+      - "7021:7021"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:5171;https://+:7021
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=123asd
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP2UNENCRYPTEDSUPPORT=true
+      - DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP3SUPPORT=true
+    depends_on:
+      - kafka
+    networks:
+      - microservices-network
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"   # RabbitMQ default port
+      - "15672:15672" # RabbitMQ management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - microservices-network  
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      # Configure listeners for both docker and host communication
+      - KAFKA_LISTENERS=CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
+      - KAFKA_ADVERTISED_LISTENERS=HOST://localhost:9092,DOCKER://kafka:9093
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT
+
+      # Settings required for KRaft mode
+      - KAFKA_NODE_ID=1
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9091
+
+      # Listener to use for broker-to-broker communication
+      - KAFKA_INTER_BROKER_LISTENER_NAME=DOCKER
+
+      # Required for a single node cluster
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    networks:
+      - microservices-network
 
 networks:
   microservices-network:

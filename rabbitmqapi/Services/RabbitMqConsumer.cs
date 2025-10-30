@@ -10,15 +10,21 @@ namespace rabbitmqapi.Services
         private readonly IConfiguration _configuration;
         private readonly string _hostname = "localhost";
         private readonly string _queueName = "message-queue";
+        private readonly IKafkaProducerService _kafkaProducerService;
+
         private IChannel? _channel;
         private IConnection? _connection;
 
-        public RabbitMqConsumer(ILogger<RabbitMqConsumer> logger, IConfiguration configuration)
+        public RabbitMqConsumer(
+            ILogger<RabbitMqConsumer> logger,
+            IConfiguration configuration,
+            IKafkaProducerService kafkaProducerService)
         {
             _logger = logger;
             _configuration = configuration;
             _hostname = _configuration["RabbitMqSettings:RabbitMqUrl"] ?? "localhost";
             _logger.LogInformation($"[{DateTime.Now:T}] HOSTNAME: {_hostname}");
+            _kafkaProducerService = kafkaProducerService;
         }
 
         protected async override Task ExecuteAsync(CancellationToken cancellationToken)
@@ -32,10 +38,18 @@ namespace rabbitmqapi.Services
                 var message = Encoding.UTF8.GetString(body);
 
                 _logger.LogInformation($"[{DateTime.Now:T}] Received message: {message}");
+                
+                try
+                {
+                    message = $"{message};RabbitMqAPI {DateTime.Now:O};";
 
-                message = $"{message};RabbitMqAPI {DateTime.Now:O};";
-
-                _logger.LogInformation($"[{DateTime.Now:T}] TO SEND message: {message}");
+                    await _kafkaProducerService.ProduceAsync(message, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error producing message to Kafka API");
+                    //throw;
+                }
 
                 await ((AsyncEventingBasicConsumer)sender).Channel.BasicAckAsync(eventArgs.DeliveryTag, multiple: false, cancellationToken);
             };
@@ -99,7 +113,7 @@ namespace rabbitmqapi.Services
             base.Dispose();
         }
     }
-    
+
     public interface IRabbitMqConsumer
     {
     }
