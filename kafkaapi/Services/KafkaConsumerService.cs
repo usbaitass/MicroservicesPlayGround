@@ -37,6 +37,9 @@ namespace kafkaapi.Services
                     }
 
                     _logger.LogInformation($"Consumed message '{consumerResult.Message.Value}' at: '{consumerResult.Offset}'.");
+
+                    var messageReceived = $"{consumerResult.Message.Value};KafkaAPI {DateTime.Now:O};";
+                    _logger.LogInformation($"SEND NEXT message: {messageReceived}");
                 }
                 catch (OperationCanceledException ex)
                 {

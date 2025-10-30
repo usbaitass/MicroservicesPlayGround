@@ -32,7 +32,7 @@ namespace rabbitmqapi.Services
                         Value = message
                     },
                     cancellationToken);
-                _logger.LogInformation($"Delivered message to {deliveryResult.Value}, topic {_topic}, partition {deliveryResult.Partition}, offset {deliveryResult.Offset}");
+                _logger.LogInformation($"Delivered message to KAFKA, topic {_topic}, partition {deliveryResult.Partition}, offset {deliveryResult.Offset}, message: {deliveryResult.Value}");
             }
             catch (ProduceException<Null, string> ex)
             {
