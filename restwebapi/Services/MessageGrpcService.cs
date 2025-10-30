@@ -33,7 +33,7 @@ public class MessageGrpcService : IMessageGrpcService
             _logger.LogError(ex, "Error while logging message content");
             //throw;
         }
-        
+
         return new Message
         {
             content = grpcReplyConfirmation

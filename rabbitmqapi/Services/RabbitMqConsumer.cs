@@ -99,7 +99,7 @@ namespace rabbitmqapi.Services
             base.Dispose();
         }
     }
-    
+
     public interface IRabbitMqConsumer
     {
     }
