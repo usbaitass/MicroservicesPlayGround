@@ -57,4 +57,13 @@ app.MapPost("/messages", async ([FromServices] ILogger<Program> logger, IMessage
     });
 }).WithName("SendMessage");
 
+app.MapPost("/receive-message", async ([FromServices] ILogger<Program> logger, [FromBody] string message, CancellationToken cancellationToken) =>
+{
+    logger.LogInformation($"[{DateTime.Now:T}] Received message from Kafka API: {message}");
+
+    message += $";RestWebAPI {DateTime.Now:O};";
+    
+    return Results.Ok(message);
+}).WithName("ReceiveMessage");
+
 app.Run();
