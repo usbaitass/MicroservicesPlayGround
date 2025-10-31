@@ -144,6 +144,38 @@ services:
     networks:
       - microservices-network
 
+  kafkaapi-dapr:
+    image: "daprio/daprd:latest"
+    command: [
+      "./daprd",
+      "-app-id", "kafkaapi",
+      "-app-port", "5171",
+      "-placement-host-address", "placement:50005"
+    ]
+    depends_on:
+      - kafkaapi
+      - placement
+    network_mode: "service:kafkaapi"
+
+  restwebapi-dapr:
+    image: "daprio/daprd:latest"
+    command: [
+      "./daprd",
+      "-app-id", "restwebapi",
+      "-app-port", "5228",
+      "-placement-host-address", "placement:50005"
+    ]
+    depends_on:
+      - restwebapi
+      - placement
+    network_mode: "service:restwebapi"
+
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50005"]
+    ports:
+      - "50005:50005"
+
 networks:
   microservices-network:
     driver: bridge
