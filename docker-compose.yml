@@ -176,9 +176,23 @@ services:
     ports:
       - "50005:50005"
 
+  db:
+    image: postgres
+    container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: example@123
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - microservices-network
+
 networks:
   microservices-network:
     driver: bridge
 
 volumes:
   rabbitmq_data:
+  postgres_data:
