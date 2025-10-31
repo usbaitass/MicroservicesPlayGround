@@ -14,11 +14,11 @@ public class MessageGrpcService : IMessageGrpcService
         _logger = logger;
     }
 
-    public async Task<Message> SendMessageAsync(Message msg, CancellationToken cancellationToken)
+    public async Task<MessageDto> SendMessageAsync(MessageDto msg, CancellationToken cancellationToken)
     {
         var grpcRequest = new MessageRequest
         {
-            Content = msg.content ?? string.Empty
+            Content = msg.Content ?? string.Empty
         };
 
         string grpcReplyConfirmation = string.Empty;
@@ -34,19 +34,19 @@ public class MessageGrpcService : IMessageGrpcService
             //throw;
         }
 
-        return new Message
+        return new MessageDto
         {
-            content = grpcReplyConfirmation
+            Content = grpcReplyConfirmation
         };
     }
 }
 
 public interface IMessageGrpcService
 {
-    Task<Message> SendMessageAsync(Message msg, CancellationToken cancellationToken);
+    Task<MessageDto> SendMessageAsync(MessageDto msg, CancellationToken cancellationToken);
 }
 
-public class Message()
+public class MessageDto()
 {
-    public string? content { get; set; }
+    public string? Content { get; set; }
 }
