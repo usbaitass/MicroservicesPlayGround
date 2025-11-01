@@ -5,15 +5,11 @@ using restwebapi.Entities;
 using restwebapi.Services;
 using reswebapi;
 
-AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
 #region grpc client setup
+
+AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 builder.Services.AddGrpcClient<Messenger.MessengerClient>(o =>
 {
@@ -28,11 +24,26 @@ builder.Services.AddGrpcClient<Messenger.MessengerClient>(o =>
 
 #endregion
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+#region setup database
+
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+#endregion
+
+#region configure GraphQL
+
+builder.Services
+    .AddGraphQLServer()
+    .RegisterDbContextFactory<AppDbContext>()
+    .AddTypes();
+
+#endregion
+
 # region register services
+
+builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IMessageGrpcService, MessageGrpcService>();
 
@@ -40,13 +51,20 @@ builder.Services.AddScoped<IMessageGrpcService, MessageGrpcService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+#region  Configure the request pipeline
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+app.MapGraphQL();
+
 app.UseHttpsRedirection();
+
+#endregion
+
+#region HTTP rest endpoints
 
 app.MapGet("/", () => "RestWebAPI is up and running");
 
@@ -106,4 +124,16 @@ app.MapPost("/receive-message", async ([FromBody] string message,
     return Results.Ok(message);
 }).WithName("ReceiveMessage");
 
-app.Run();
+app.MapGet("/messages", (
+    [FromServices] ILogger<Program> logger,
+    AppDbContext context,
+    CancellationToken cancellationToken) =>
+{
+    var result = context.Messages;
+
+    return Results.Ok(result);
+}).WithName("GetMessages");
+
+#endregion
+
+app.RunWithGraphQLCommands(args);
