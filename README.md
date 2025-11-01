@@ -1,6 +1,8 @@
 # MicroservicesPlayGround
 The project contains multiple microservice projects that interact with each other through different technologies.
 
+![Alt text](https://drive.google.com/uc?export=view&id=1sbXvDDQ-KiyFJC1KVMUAsKIY1BeMDLwK)
+
 ### run projects in docker containers
 ```
 docker compose up
