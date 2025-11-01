@@ -1,12 +1,18 @@
 # MicroservicesPlayGround
 The project contains multiple microservice projects that interact with each other through different technologies.
 
-
 ### run projects in docker containers
 ```
 docker compose up
 docker compose build --no-cache
 docker compose down
+```
+
+### Endpoints to use
+```
+POST http://localhost:5228/messages
+GET http://localhost:5228/messages
+GraphQL http://localhost:5228/graphql/
 ```
 
 ### setup certificate
