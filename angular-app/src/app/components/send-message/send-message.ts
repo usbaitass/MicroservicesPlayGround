@@ -1,0 +1,10 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-send-message',
+  imports: [],
+  templateUrl: './send-message.html',
+})
+export class SendMessage {
+
+}
