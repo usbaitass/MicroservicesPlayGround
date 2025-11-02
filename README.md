@@ -5,13 +5,14 @@ The project contains multiple microservice projects that interact with each othe
 
 ### run projects in docker containers
 ```
-docker compose up
 docker compose build --no-cache
+docker compose up
 docker compose down
 ```
 
 ### Endpoints to use
 ```
+WEB APP http://localhost:4202/
 POST http://localhost:5228/messages
 GET http://localhost:5228/messages
 GraphQL http://localhost:5228/graphql/
@@ -23,8 +24,11 @@ dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p 123asd
 dotnet dev-certs https --trust
 ```
 
+# COMMANDS USE FOR REFERENCE
+
 ### add project to the solution
 ```
+dotnet new web -n grpcapi
 dotnet sln add grpcapi/grpcapi.csproj 
 ```
 

@@ -21,8 +21,8 @@ USER nginx
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=builder /app/dist/cargo-web/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/angular-app/browser /usr/share/nginx/html
 
-EXPOSE 8081
+EXPOSE 4202
 
 CMD ["nginx", "-g", "daemon off;"]

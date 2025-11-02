@@ -1,4 +1,17 @@
 services:
+  angular_app:
+    image: angular_app
+    build:
+      context: angular-app
+      dockerfile: Dockerfile
+    ports:
+      - "4202:4202"
+    restart: always
+    depends_on:
+      - restwebapi
+    networks:
+      - microservices-network
+
   restwebapi:
     image: restwebapi:latest
     build:
