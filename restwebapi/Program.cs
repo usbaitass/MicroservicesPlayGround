@@ -49,6 +49,21 @@ builder.Services.AddScoped<IMessageGrpcService, MessageGrpcService>();
 
 #endregion
 
+#region configure CORS
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4202")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+#endregion
+
 var app = builder.Build();
 
 #region  Configure the request pipeline
@@ -61,6 +76,8 @@ if (app.Environment.IsDevelopment())
 app.MapGraphQL();
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAngularApp");
 
 #endregion
 
