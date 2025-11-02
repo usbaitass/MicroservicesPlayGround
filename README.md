@@ -24,12 +24,12 @@ dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p 123asd
 dotnet dev-certs https --trust
 ```
 
-# COMMANDS USE FOR REFERENCE
+# COMMANDS USED, SAVED FOR REFERENCE
 
 ### add project to the solution
 ```
 dotnet new web -n grpcapi
-dotnet sln add grpcapi/grpcapi.csproj 
+dotnet sln add grpcapi/grpcapi.csproj
 ```
 
 ### setup rabbitmq docker container

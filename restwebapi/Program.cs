@@ -126,16 +126,15 @@ app.MapPost("/receive-message", async ([FromBody] string message,
         {
             await db.SaveChangesAsync(cancellationToken);
         }
-        catch (DbUpdateException ex)
+        catch (DbUpdateException)
         {
-            logger.LogError(ex, "Item is already exists.");
-            //throw new Exception("Item is already exists.");
+            throw new Exception("Item is already exists.");
         }
     }
     catch (Exception ex)
     {
         logger.LogError(ex, "Error while saving message to database!");
-        //throw;
+        //throw; //todo handle exception later
     }
 
     return Results.Ok(message);

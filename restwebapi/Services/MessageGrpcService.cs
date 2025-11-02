@@ -31,7 +31,7 @@ public class MessageGrpcService : IMessageGrpcService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while logging message content");
-            //throw;
+            // throw; //todo handle exception later
         }
 
         return new MessageDto
