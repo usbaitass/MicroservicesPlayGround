@@ -1,1 +1,14 @@
-<p>messages works!</p>
+<div class="messages-container">
+  <h3>Messages</h3>
+  <button (click)="getMessages()" class="update-button">Update list</button>
+
+  <ul *ngIf="messages.length; else noMessages">
+    <li *ngFor="let msg of messages">
+      {{ msg.id }} {{ msg.content }} {{ msg.status }} {{ msg.createAt }}
+    </li>
+  </ul>
+
+  <ng-template #noMessages>
+    <p>No messages yet.</p>
+  </ng-template>
+</div>
