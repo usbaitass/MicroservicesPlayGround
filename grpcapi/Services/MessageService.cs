@@ -29,7 +29,7 @@ public class MessageService : Messenger.MessengerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while sending WebSocket message");
-            //throw;
+            //throw; //todo handle exception later
         }
 
         return await Task.FromResult(new MessageReply

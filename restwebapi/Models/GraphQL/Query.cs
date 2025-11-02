@@ -6,8 +6,6 @@ namespace restwebapi.Models.GraphQL;
 public static class Query
 {
     public static IQueryable<Message> GetMessages(AppDbContext context) => context.Messages;
-
-    public static Book GetBook() => new Book("C# in depth.", new Author("Jon Skeet"));
 }
 
 public class Mutation
