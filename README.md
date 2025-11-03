@@ -16,6 +16,8 @@ WEB APP http://localhost:4202/
 POST http://localhost:5228/messages
 GET http://localhost:5228/messages
 GraphQL http://localhost:5228/graphql/
+OpenAPI http://localhost:5228/openapi/v1.json
+SwaggerAPI http://localhost:5228/swagger
 ```
 
 ### setup certificate
