@@ -37,4 +37,6 @@ dotnet sln add grpcapi/grpcapi.csproj
 ### setup rabbitmq docker container
 ```
 docker run -d --hostname rabbit-host --name rabbitmq   -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
+docker run -d --name redis -p 6379:6379 redis
 ```

@@ -16,6 +16,10 @@ public class MessageGrpcService : IMessageGrpcService
 
     public async Task<MessageDto> SendMessageAsync(MessageDto msg, CancellationToken cancellationToken)
     {
+        _logger.LogInformation($"[{DateTime.Now:T}] Received message: {msg.Content}");
+
+        msg.Content += $";RestWebAPI {DateTime.Now:O};";
+
         var grpcRequest = new MessageRequest
         {
             Content = msg.Content ?? string.Empty
