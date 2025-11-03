@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using restwebapi;
-using restwebapi.Entities;
 using restwebapi.Services;
+using restwebapi.UseCases;
 using reswebapi;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,15 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
 
 #endregion
 
+#region setup Redis
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    return ConnectionMultiplexer.Connect(builder.Configuration["Redis:ConnectionString"]!);
+});
+
+#endregion
+
 #region configure GraphQL
 
 builder.Services
@@ -46,6 +56,8 @@ builder.Services
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IMessageGrpcService, MessageGrpcService>();
+builder.Services.AddScoped<IGetAllMessagesUseCase, GetAllMessagesUseCase>();
+builder.Services.AddScoped<ISaveMessageUseCase, SaveMessageUseCase>();
 
 #endregion
 
@@ -87,14 +99,9 @@ app.UseCors("AllowAngularApp");
 app.MapGet("/", () => "RestWebAPI is up and running");
 
 app.MapPost("/messages", async (MessageDto msg,
-    [FromServices] ILogger<Program> logger,
     IMessageGrpcService messageGrpcService,
     CancellationToken cancellationToken) =>
 {
-    logger.LogInformation($"[{DateTime.Now:T}] Received message: {msg.Content}");
-
-    msg.Content += $";RestWebAPI {DateTime.Now:O};";
-
     var result = await messageGrpcService.SendMessageAsync(msg, cancellationToken);
 
     return Results.Ok(new
@@ -104,51 +111,21 @@ app.MapPost("/messages", async (MessageDto msg,
 }).WithName("SendMessage");
 
 app.MapPost("/receive-message", async ([FromBody] string message,
-    [FromServices] ILogger<Program> logger,
-    AppDbContext db,
+    ISaveMessageUseCase saveMessageUseCase,
     CancellationToken cancellationToken) =>
 {
-    logger.LogInformation($"[{DateTime.Now:T}] Received message from Kafka API: {message}");
+    var messageDto = await saveMessageUseCase.ExecuteAsync(message, cancellationToken);
 
-    message += $";RestWebAPI {DateTime.Now:O};";
-
-    var messageEntity = new Message
-    {
-        Content = message,
-        CreatedAt = DateTime.UtcNow,
-        Status = "DELIVERED"
-    };
-
-    try
-    {
-        await db.Messages.AddAsync(messageEntity, cancellationToken);
-
-        try
-        {
-            await db.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateException)
-        {
-            throw new Exception("Item is already exists.");
-        }
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "Error while saving message to database!");
-        //throw; //todo handle exception later
-    }
-
-    return Results.Ok(message);
+    return Results.Ok(messageDto);
 }).WithName("ReceiveMessage");
 
-app.MapGet("/messages", (
-    [FromServices] ILogger<Program> logger,
-    AppDbContext context,
+app.MapGet("/messages", async (
+    IGetAllMessagesUseCase getAllMessagesUseCase,
     CancellationToken cancellationToken) =>
 {
-    var result = context.Messages;
+    var messages = await getAllMessagesUseCase.ExecuteAsync(cancellationToken);
 
-    return Results.Ok(result);
+    return Results.Ok(messages);
 }).WithName("GetMessages");
 
 #endregion

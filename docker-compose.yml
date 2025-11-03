@@ -202,6 +202,15 @@ services:
     networks:
       - microservices-network
 
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - microservices-network
+
 networks:
   microservices-network:
     driver: bridge
