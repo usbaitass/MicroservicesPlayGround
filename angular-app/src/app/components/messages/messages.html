@@ -1,14 +1,29 @@
 <div class="messages-container">
   <h3>Messages</h3>
-  <button (click)="getMessages()" class="update-button">Update list</button>
+  <button type="button" class="btn btn-primary mb-4" (click)="getMessages()">Update list</button>
 
-  <ul *ngIf="messages.length; else noMessages">
-    <li *ngFor="let msg of messages">
-      {{ msg.id }} {{ msg.content }} {{ msg.status }} {{ msg.createAt }}
-    </li>
-  </ul>
+  <div *ngIf="messages.length; else noMessages">
+    <table class="table table-striped table-hover table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Content</th>
+          <th>Status</th>
+          <th>CreatedAt</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let msg of messages">
+          <td>{{ msg.id }}</td>
+          <td>{{ msg.content }}</td>
+          <td class="p-3 mb-2 bg-success bg-gradient text-white">{{ msg.status }}</td>
+          <td>{{ msg.createAt }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <ng-template #noMessages>
-    <p>No messages yet.</p>
+    <p class="m-2 text-danger">No messages yet.</p>
   </ng-template>
 </div>
