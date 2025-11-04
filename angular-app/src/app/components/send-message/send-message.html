@@ -1,9 +1,9 @@
-<div class="send-message-container">
+<div class="input-group mb-3 w-50">
   <input
     type="text"
     [(ngModel)]="messageText"
     placeholder="Type your message..."
-    class="message-input"
+    class="form-control"
   />
-  <button (click)="sendMessage()" class="send-button">Send</button>
+  <button type="button" class="btn btn-primary ms-2" (click)="sendMessage()">Send</button>
 </div>
