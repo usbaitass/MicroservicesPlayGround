@@ -25,8 +25,7 @@ public class MessageGrpcService : IMessageGrpcService
             Content = msg.Content ?? string.Empty
         };
 
-        string grpcReplyConfirmation = string.Empty;
-
+        string grpcReplyConfirmation;
         try
         {
             var grpcReply = await _grpcClient.SendMessageAsync(grpcRequest, cancellationToken: cancellationToken);
@@ -35,7 +34,7 @@ public class MessageGrpcService : IMessageGrpcService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while logging message content");
-            // throw; //todo handle exception later
+            throw;
         }
 
         return new MessageDto
