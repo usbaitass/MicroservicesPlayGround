@@ -26,7 +26,7 @@ public class MessagingHub : Hub, IMessagingHub
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error publishing message to RabbitMQ");
-            // throw; //todo handle exception later
+            throw;
         }
 
         await Clients.All.SendAsync("ReceiveUpdate", source, message);

@@ -48,7 +48,6 @@ public class RabbitMqConsumer : BackgroundService, IRabbitMqConsumer
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error producing message to Kafka API");
-                //throw; //todo handle exception later
             }
 
             await ((AsyncEventingBasicConsumer)sender).Channel.BasicAckAsync(eventArgs.DeliveryTag, multiple: false, cancellationToken);

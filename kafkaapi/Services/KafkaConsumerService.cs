@@ -62,17 +62,19 @@ public class KafkaConsumerService : BackgroundService, IKafkaConsumerService
                 catch (Exception ex)
                 {
                     _logger.LogError($"Could not send message via Dapr. Error occurred: {ex.Message}");
-                    //throw; //todo handle exception later
                 }
             }
             catch (OperationCanceledException ex)
             {
-                // ignore
                 _logger.LogError($"Error occurred: {ex.Message}");
             }
             catch (ConsumeException ex)
             {
                 _logger.LogError($"Error occurred: {ex.Error.Reason}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred!");
             }
         }
     }

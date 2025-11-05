@@ -63,7 +63,7 @@ public class SaveMessageUseCase : ISaveMessageUseCase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while saving message to database!");
-            //throw; //todo handle exception later
+            throw;
         }
 
         return messageEntity;
